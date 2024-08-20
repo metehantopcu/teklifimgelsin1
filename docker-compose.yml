@@ -1,10 +1,21 @@
 version: '3'
 services:
   web:
-    build: .
-    ports:
-      - "8000:8000"
+    image: teklifimgelsin1_web
+    container_name: 7a011bd8bd88
+    restart: always
     volumes:
-      - .:/app  # Host makinesindeki mevcut dizini container içindeki /app dizinine bağlar
-    environment:
-      - FLASK_ENV=development  # Flask uygulamasının değişiklikleri algılaması için development modu
+      - .:/app
+    expose:
+      - "8000"  # Flask uygulaması için expose
+    command: gunicorn -w 4 -b 0.0.0.0:8000 app:app
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Nginx yapılandırması
+    depends_on:
+      - web
