@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app  # Host makinesindeki mevcut dizini container içindeki /app dizinine bağlar
+    environment:
+      - FLASK_ENV=development  # Flask uygulamasının değişiklikleri algılaması için development modu
