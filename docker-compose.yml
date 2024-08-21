@@ -1,21 +1,25 @@
 version: '3'
 services:
-  web:
-    image: teklifimgelsin1_web
-    container_name: 7a011bd8bd88
-    restart: always
-    volumes:
-      - .:/app
-    expose:
-      - "8000"  # Flask uygulaması için expose
-    command: gunicorn -w 4 -b 0.0.0.0:8000 app:app
-
   nginx:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "80:80"
+      - "80:80"  # Host makinenin 80 portunu Nginx'e bağla
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf  # Nginx yapılandırması
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Nginx konfigürasyonunu mount et
+    networks:
+      - webnet  # Nginx'i "webnet" ağına bağlıyoruz
     depends_on:
-      - web
+      - flask_app  # Nginx'in önce Flask uygulaması çalışana kadar beklemesini sağlıyoruz
+
+  flask_app:
+    build: ./teklifimgelsin1  # Flask uygulamasının Dockerfile'ının bulunduğu dizin
+    container_name: flask_app
+    expose:
+      - "5000"  # Flask uygulaması 5000 portunu expose ediyor (sadece konteyner içinde)
+    networks:
+      - webnet  # Flask uygulamasını "webnet" ağına bağlıyoruz
+
+networks:
+  webnet:
+    driver: bridge  # Ortak bir ağ oluşturuyoruz
